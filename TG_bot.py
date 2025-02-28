@@ -14,15 +14,26 @@ def send_welcome(message):
 
 @bot.message_handler(commands=['add'])
 def add_data(message):
-    try:
-        parts = message.text.split(maxsplit=3)
-        name = parts[1]
-        surname = parts[2]
-        age = int(parts[3])
-        save_data(name, surname, age)
-        bot.reply_to(message, f"Добавлена запись: {name} {surname}, {age} лет.")
-    except ValueError:
-        bot.reply_to(message, f"Ошибка!Используйте формат: /add Имя Фамилия Возраст")
+    parts = message.text.split(maxsplit=3)
+
+    if len(parts) != 4:
+        bot.reply_to(message, "Ошибка! Используйте формат: /add Имя Фамилия Возраст")
+        return
+
+    name, surname, age_str = parts[1], parts[2], parts[3]
+
+    if not age_str.isdigit():
+        bot.reply_to(message, "Ошибка! Возраст должен быть числом.")
+        return
+
+    age = int(age_str)
+    if age < 0 or age > 100:
+        bot.reply_to(message, "Ошибка! Укажите корректный возраст (0-100).")
+        return
+
+    save_data(name, surname, age)
+    bot.reply_to(message, f"Добавлена запись: {name} {surname}, {age} лет.")
+
 @bot.message_handler(commands=['read'])
 def read_all_data(message):
     records = read_data()
