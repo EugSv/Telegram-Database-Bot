@@ -15,12 +15,14 @@ def send_welcome(message):
 @bot.message_handler(commands=['add'])
 def add_data(message):
     try:
-        name, surname, age = message.text.split()
-        save_data(name, surname, int(age))
+        parts = message.text.split(maxsplit=3)
+        name = parts[1]
+        surname = parts[2]
+        age = int(parts[3])
+        save_data(name, surname, age)
         bot.reply_to(message, f"Добавлена запись: {name} {surname}, {age} лет.")
     except ValueError:
-        bot.reply_to(message, "Ошибка! Используйте формат: /add Имя Фамилия Возраст")
-
+        bot.reply_to(message, f"Ошибка!Используйте формат: /add Имя Фамилия Возраст")
 @bot.message_handler(commands=['read'])
 def read_all_data(message):
     records = read_data()
